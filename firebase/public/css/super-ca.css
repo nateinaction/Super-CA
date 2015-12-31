@@ -1,0 +1,85 @@
+#superCA, #unauthenticated, #delivery-list, .package {
+	width: 100%;
+}
+#logo, #userID, #loginButton {
+	display: block;
+	margin: 15px auto;
+}
+#logo-small {
+	display: block;
+	margin: 8px auto;
+}
+#userID {
+	padding: 21px 12px;
+}
+#loginButton {
+	padding: 11px 22px;
+}
+#empty-delivery-list {
+  text-align: center;
+}
+.section-header {
+	display: block;
+	width: 100%;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 11px;
+	background-color: lightgray;
+}
+#search-field {
+	margin:10px 0;
+}
+#search-results .package {
+	padding: 18px 0;
+}
+.package {
+	/*padding: 12px 0;*/
+	position: relative;
+}
+.package + .package {
+	border-top: 1px solid black;
+}
+.package-info {
+	border-top: 12px solid white;
+	border-bottom: 12px solid white;
+}
+.trash, .complete {
+	font-size: 32px;
+	color: white;
+	display: flex;
+}
+.trash > i, .complete > i {
+	padding: 0 12px;
+	margin: auto 0;
+}
+.trash {
+	background-color: red;
+	border-right: 8px solid white;
+	justify-content: flex-end;
+}
+.complete {
+	background-color: lightgreen;
+	border-left: 8px solid white;
+	justify-content: flex-start;
+}
+.completed {
+	background-color: lightgray;
+	border-color: lightgray;
+	opacity: 0.4;
+}
+.completed-border {
+	border-color: lightgray;
+	opacity: 0.4;
+}
+.packageID {
+	font-weight: bold;
+	margin: 0 12px 0 0;
+	display: inline;
+}
+.addressee {
+	display: inline;
+}
+.notes {
+	display: block;
+	padding: 10px 0 0 0;
+}

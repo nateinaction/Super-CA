@@ -1,0 +1,26 @@
+{
+  "name": "Super CA Mobile",
+  "authors": [
+    "Nate Gay <nate@ohnate.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [
+    "es6"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "firebase": "~2.3.2",
+    "font-awesome": "fontawesome#~4.5.0",
+    "jquery": "~2.1.4",
+    "Swiper": "swiper#~3.2.7"
+  }
+}

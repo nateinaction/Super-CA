@@ -1,0 +1,22 @@
+{
+  "name": "Super CA Chrome Extension",
+  "authors": [
+    "Nate Gay <nate@ohnate.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "firebase": "~2.3.2",
+    "jquery": "~2.1.4"
+  }
+}
