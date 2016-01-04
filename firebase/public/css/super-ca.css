@@ -5,6 +5,10 @@
 	display: block;
 	margin: 15px auto;
 }
+#email {
+	text-align: center;
+    font-size: 11px;
+}
 #logo-small {
 	display: block;
 	margin: 8px auto;

@@ -7,7 +7,8 @@
  * 2. Initial DOM setup
  * 3. Reading information from DOM
  * 4. Dynamic DOM manipulation
- * 5. Firebase
+ * 5. Firebase API calls
+ * 6. Chrome API calls
  */
 
 /*
@@ -19,6 +20,7 @@
 // using version 1 of Super CA database
 var databaseVersion = 'v1',
 	firebase = new Firebase('https://super-ca.firebaseio.com/' + databaseVersion),
+	user,
 	packages,
 	deliveries,
 	refreshTimer;
@@ -120,6 +122,10 @@ function removeDeliveryHTML(id) {
 	$('#super-ca-id-' + id).remove();
 };
 
+function userEmailHTML(email) {
+	$('#super-ca-email').text(email);
+};
+
 /*
  *
  * 5. Firebase
@@ -129,9 +135,8 @@ function removeDeliveryHTML(id) {
 // called from setupSuperCA(), authenticate with firebase from google account info sent from background.js
 function authenticateFirebase() {
 	if (!firebase.getAuth()) {
-		// authenticate with firebase
-		// messages background page for access to google oAuth token, then authenticates with firebase
-		chrome.runtime.sendMessage({message: 'getToken'}, function(token) {
+		chromeGetToken(function(token) {
+			// authenticates with firebase
 			firebase.authWithOAuthToken('google', token, function(error, authData) {
 				if (error) {
 					console.log('Login Failed!', error);
@@ -139,8 +144,8 @@ function authenticateFirebase() {
 					console.log('Authenticated successfully with payload:', authData);
 				};
 			});
-		});
-	};
+		});	
+	};	
 };
 
 // on connect, define firebase.packages and firebase.deliveries, watch for changes to firebase, scan the package log, setup refresh timer
@@ -149,10 +154,13 @@ function firebaseAuthWatch() {
 	firebase.onAuth(function(authData) {
 		if (authData) {
 			console.log('firebase connected');
+			user = firebase.child('users/' + authData.uid + '/info');
 			packages = firebase.child('users/' + authData.uid + '/packages');
 			deliveries = firebase.child('users/' + authData.uid + '/deliveries');
 			firebaseWatch();
 			scanPackageLog();
+			chromeGetEmail();
+			updateUserInfo({name: authData.google.displayName, avatar: authData.google.profileImageURL });
 			refreshTimer = setInterval(refreshList, 60000);
 		} else {
 			console.log('firebase disconnected');
@@ -160,6 +168,10 @@ function firebaseAuthWatch() {
 			authenticateFirebase();
 		};
 	});
+};
+
+function updateUserInfo(userInfo) {
+	user.update(userInfo);
 };
 
 // when package is added to firebase.deliveries, run addDeliveryHTML()
@@ -232,5 +244,28 @@ function removePackages(newPackagesArray) {
 				packages.child(id).remove();
 			};
 		};
+	});
+};
+
+/*
+ *
+ * 6. Chrome API calls
+ *
+ */
+
+// messages background page for access to google oAuth token, returns token
+function chromeGetToken(callback) {
+	chrome.runtime.sendMessage({message: 'getToken'}, function(token) {
+		console.log('requesting token from background page')
+		callback(token);
+	});
+};
+
+// messages background page for access to google user email
+function chromeGetEmail() {
+	chrome.runtime.sendMessage({message: 'getEmail'}, function(email) {
+		console.log('requesting email from background page')
+		updateUserInfo({'email': email});
+		userEmailHTML(email)
 	});
 };

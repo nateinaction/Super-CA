@@ -20,6 +20,7 @@
 // using v1 of database
 var databaseVersion = 'v1',
 	firebase = new Firebase('https://super-ca.firebaseio.com/' + databaseVersion),
+	user,
 	packages,
 	deliveries,
 	packageArray = [],
@@ -46,11 +47,7 @@ $(document).ready(function(){
 // when user taps login button, authenticate
 function userLogin() {
 	$('#unauthenticated').on('click', '#loginButton', function () {
-		firebase.authWithOAuthRedirect('google', function(error) {
-			if (error) {
-				console.log('Authentication Failed!', error);
-			};
-		});
+		authenticateFirebase();
 	});
 };
 
@@ -219,6 +216,10 @@ function initializeSwiper(id) {
 	});
 };
 
+function userEmailHTML(email) {
+	$('#email-address').text(email);
+};
+
 /*
  *
  * 5. Logic
@@ -246,6 +247,14 @@ function searchFilter(item) {
  *
  */
 
+function authenticateFirebase() {
+	firebase.authWithOAuthRedirect('google', function(error) {
+		if (error) {
+			console.log('Authentication Failed!', error);
+		};
+	}, {scope: 'email'});
+};
+
 // on connect: create user profile info, set global vars packages and deliveries, run authenticatedHTML() and firebaseWatch()
 // on disconnect: run unauthenticatedHTML()
 // initialize firebase after $(document).ready(function(){}
@@ -253,11 +262,19 @@ function firebaseAuthWatch() {
 	firebase.onAuth(function(authData) {
 		if (authData) {
 			console.log('firebase connected');
-			firebase.child('users/' + authData.uid + '/info').set({name: authData.google.displayName, avatar: authData.google.profileImageURL});
+			user = firebase.child('users/' + authData.uid + '/info');
 			packages = firebase.child('users/' + authData.uid + '/packages');
 			deliveries = firebase.child('users/' + authData.uid + '/deliveries');
-			authenticatedHTML();
-			firebaseWatch();
+
+			// if there is no access to user's email address, force user to log out
+			if (authData.google.email === undefined) {
+				firebase.unauth();
+			} else {
+				authenticatedHTML();
+				firebaseWatch();
+				userEmailHTML(authData.google.email);
+				updateUserInfo({name: authData.google.displayName, email: authData.google.email, avatar: authData.google.profileImageURL});
+			};
 		} else {
 			console.log('firebase disconnected');
 			unauthenticatedHTML();
@@ -271,6 +288,10 @@ function firebaseWatch() {
 	packageRemoved();
 	deliveryAdded();
 	deliveryRemoved();
+};
+
+function updateUserInfo(userInfo) {
+	user.update(userInfo);
 };
 
 // when package added to firebase.packages add to packageArray
